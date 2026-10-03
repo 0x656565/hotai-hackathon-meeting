@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>靈感評選結果</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --ink: #20262d;
+      --muted: #64707d;
+      --line: #d9dfd7;
+      --accent: #16685c;
+      --accent-ink: #0d433c;
+      --accent-soft: #dcefeb;
+      --warn: #9a5b14;
+      --shadow: 0 14px 34px rgba(32, 38, 45, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, #e7f0eb 0, rgba(231, 240, 235, 0) 280px),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 34px auto 56px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(260px, 2fr) auto;
+      gap: 14px;
+      align-items: end;
+      padding: 16px;
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+    input[type="search"] {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      font: inherit;
+      background: var(--panel);
+    }
+
+    .threshold-value {
+      display: inline-flex;
+      min-width: 34px;
+      min-height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(78px, 1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      min-width: 78px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .stat b {
+      display: block;
+      color: var(--accent-ink);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px;
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      max-width: 230px;
+      min-height: 56px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+
+    .tab strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .tab span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: rgba(22, 104, 92, 0.45);
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+    }
+
+    .topic {
+      display: none;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow);
+    }
+
+    .topic.active { display: block; }
+
+    .topic-head {
+      display: flex;
+      gap: 16px;
+      align-items: start;
+      justify-content: space-between;
+      margin: 0 0 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .topic-count {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .idea-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 12px;
+    }
+
+    .idea {
+      display: grid;
+      gap: 10px;
+      min-height: 146px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .idea-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .vote-row {
+      display: grid;
+      grid-template-columns: 54px 1fr 42px;
+      gap: 10px;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .vote-number {
+      color: var(--accent-ink);
+      font-size: 30px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .bar {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #edf0ec;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #16685c, #76a96e);
+    }
+
+    .vote-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .empty,
+    .error {
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .error {
+      border-color: rgba(154, 91, 20, 0.45);
+      color: var(--warn);
+    }
+
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 1180px); margin-top: 22px; }
+      .controls { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .topic-head { display: block; }
+      .topic-count { margin-top: 4px; white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>靈感評選結果</h1>
+    <p class="meta" id="sourceMeta">評選結果快照</p>
+
+    <section class="controls" aria-label="篩選">
+      <label>
+        最少有料數量
+        <input id="threshold" type="range" min="0" max="0" value="0">
+      </label>
+      <label>
+        關鍵字
+        <input id="search" type="search" placeholder="輸入點子關鍵字">
+      </label>
+      <div class="stats" aria-live="polite">
+        <div class="stat"><b id="thresholdValue">0</b><span>目前門檻</span></div>
+        <div class="stat"><b id="visibleCount">0</b><span>顯示點子</span></div>
+        <div class="stat"><b id="voterCount">0</b><span>評選人數</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs" id="tabs" aria-label="題目"></nav>
+    <section id="topics"></section>
+  </main>
+
+  <script>
+    const SNAPSHOT = {"totalVoters":4,"groups":[{"title":"智能轉型：AI助攻油轉電TOYOTA EV新生活","index":0,"ideas":[{"title":"結合google map紀錄跟充電站點地圖","score":3},{"title":"拿車主資料去ML分析persona，推薦相似車主換車後成本","score":3},{"title":"強調熟悉感，打死特斯拉","score":3},{"title":"透過建模精準預測換車成本變化","score":3},{"title":"一個強調陪伴、不會馬上強迫接受新觀念的夥伴","score":3},{"title":"電動車一日試乘（ai可能應用在安排試乘或者在車上的app告訴他他省了多少錢）","score":3},{"title":"安靜的車 安心的避風港","score":2},{"title":"電動車充電站巡禮or體驗","score":2},{"title":"用AI助理精簡的解釋換車的好處跟緩解焦慮","score":1},{"title":"下一個時代的高人一等感","score":1},{"title":"明信片框的一家人開車出遊合照","score":1},{"title":"網頁互動式小遊戲（什麼車主的一天之類的）","score":1},{"title":"Ai行銷廣告，油電車對比","score":1},{"title":"Ai車輛管理管家（即時注意車輛狀況並且發送保養通知與解釋）","score":0},{"title":"1.展間展示2.生成式AI3.車主小問卷4.個人化解決5.預測成本需求","score":0}]},{"title":"運用AI再造 TOYOTA 下一代顧客售後服務體驗","index":1,"ideas":[{"title":"增強顧客回饋管道","score":4},{"title":"溫暖問候的老朋友","score":3},{"title":"更精準的維修時長預估","score":2},{"title":"用AI來記錄顧客回覆，分析語氣並制定溝通策略","score":2},{"title":"用平板直接讓車主看細部零件車況，透過選單決定是否更換或聯絡服務人員","score":2},{"title":"提供yoxi優惠之類的，讓車主出去玩不待在客休室","score":2},{"title":"Debug思路重新檢查互動步驟","score":2},{"title":"玩具","score":2},{"title":"車主情境知識庫：依車款與常見問題提供個人化操作、保養與故障指引。","score":2},{"title":"1.有溫度AI迎賓2.數位分身3.轉換語氣滿意度調查4現況與新品對比5迫切度表單.","score":2},{"title":"AI吉祥物解說更換零件需求","score":1},{"title":"一整套親子行程，參訪維修產線（隔玻璃）","score":1},{"title":"結合修車知識的Rpg互動式小遊戲","score":1}]},{"title":"AI 流失風險洞察與智慧溝通：打造Lexus車主忠誠度的終極防線","index":2,"ideas":[{"title":"邀請車主共同改善用車體驗","score":4},{"title":"用一個消費者的完整消費生命週期 來切成不同情境","score":4},{"title":"非監督式學習來分群","score":2},{"title":"抄襲其他廠商怎麼定義persona","score":2},{"title":"以方便性為主打切入","score":2},{"title":"經營社群帳號增加黏著度","score":2},{"title":"像蜘蛛網一樣攔住小蟲","score":2},{"title":"痛點對應話術生成器：依據已驗證的顧客痛點，產生客服、LINE、簡訊與服務顧問即時可使用的溝通草稿。","score":2},{"title":"車主抱怨熱點地圖：依議題、地區與時間呈現常見不滿，協助服務團隊找出優先改善項目。","score":2},{"title":"高級網軍","score":1},{"title":"拉住要走的手的意象","score":1},{"title":"紙杯傳聲筒","score":1},{"title":"原廠價值落差分析：比較車主期待與實際服務感受，找出原廠價值未被理解或體驗的環節","score":1},{"title":"原廠價值落差分析：比較車主期待與實際服務感受，找出原廠價值未被理解或體驗的環節。","score":1},{"title":"1.客製化預約2.感應系統3.透明化4.溝通策略5.企業本身價值","score":1}]},{"title":"HINO x GenAI：運用商用車車聯網大數據，發展商用車頭家的智慧夥伴","index":3,"ideas":[{"title":"類似導航，及時提醒","score":4},{"title":"借鑒安全省油駕駛挑戰賽","score":4},{"title":"用鼓勵代替責罵","score":4},{"title":"每週回顧報告（輕鬆風格）","score":4},{"title":"結合過往資料，強調駕駛相對自己的進步","score":4},{"title":"要考慮到駕駛實際上路會遇到的困難","score":4},{"title":"省油用AI給每週技術排名","score":3},{"title":"組隊挑戰大賽","score":3},{"title":"分項評價SABC 總分過門檻獎勵","score":3},{"title":"安全駕駛獎勵任務：將安全、平順駕駛等目標設計成可累積的個人或車隊挑戰。","score":3},{"title":"調度情境模擬器：比較不同派車、路線或休息安排對油耗與風險的可能影響。","score":3},{"title":"1.挑戰賽2.語言互動3.每日成就戰報4.累積獎金5.省油津貼.","score":3},{"title":"各項指標用PR值來呈現","score":2}]},{"title":"運用 AI 打造 iRent 智能車況管家：優化租還車體驗與營運效率","index":4,"ideas":[{"title":"拍照涵蓋必要內容用任務形式發布","score":4},{"title":"先對照片做分類再識別","score":4},{"title":"類似AR的小動物視角來提醒補拍","score":3},{"title":"車輛內裝先建模or預設","score":3},{"title":"思考髒亂回報機制，怎麼讓顧客願意如實呈現","score":3},{"title":"AI 拍照教練：即時提示角度、距離與光線，確保照片清楚完整。","score":3},{"title":"加裝臭味計在車內","score":2},{"title":"在手機端就做影像辨識","score":2},{"title":"透過chatbot聯絡人員","score":2},{"title":"AI 信心分級與人工複核：低信心或高影響事件才派給人員確認，減少不必要的逐張檢查。","score":2},{"title":"清潔任務智慧派單：依髒污程度、車輛位置與下一筆預約，推薦處理優先順序。","score":2},{"title":"即時營運警示中心：將需清潔、疑似損傷或資料不足的車輛集中排序通知。","score":2},{"title":"讓使用者繞一圈拍影片","score":1},{"title":"魔法師要畫出完整法陣","score":1},{"title":"1、智慧鏡頭2、生成式AI 3、完整的車況拍攝4、大數據後台分析5、即時良好的溝通","score":1}]},{"title":"不搭車，也打開 yoxi —— 打造高頻互動的AI出行夥伴","index":5,"ideas":[{"title":"用簽到跟任務逼你開APP","score":4},{"title":"假日每天一個特殊折扣景點","score":4},{"title":"模仿akinator，給找到每天符合主題的冷門景點的幸運兒獎勵","score":4},{"title":"抽獎（尤其專屬抽獎）","score":4},{"title":"活動交通管家：追蹤演唱會、展覽或大型活動的出發時間、交通提醒與散場安排。","score":4},{"title":"做recap，紀錄搭車資訊","score":3},{"title":"筆記分享，社群互動","score":3},{"title":"幫忙生成各種風格文案","score":3},{"title":"發掘適合2-5小時的城市輕旅行","score":3},{"title":"塑造 過程輕鬆+體驗豐富 的雙重享受","score":3},{"title":"行程智慧助理：用對話規劃「下班吃飯再去看電影」等多站行程，並估算時間與移動方式。","score":3},{"title":"1.每日任務2.遊戲3.社群媒體4.互動分享5.扭蛋驚喜","score":3},{"title":"搭車月里程數排行榜","score":1}]},{"title":"打造去趣 eSIM 全旅程智能銷售與服務體驗","index":6,"ideas":[{"title":"網路發文推薦可以升級方案","score":4},{"title":"根據手機數據可以自動評估用量方案","score":4},{"title":"給予分享者旅遊達人認證 尊榮感","score":4},{"title":"強化真實親友之間的互相推薦","score":4},{"title":"AI 旅程回憶摘要：讓使用者選擇分享旅程照片或紀錄後，生成可回顧或分享的旅程摘要。","score":4},{"title":"做旅行recap，讓他回顧這趟美好並分享","score":3},{"title":"和台灣景點相似的國外景點➡️方便到彷彿沒出國","score":3},{"title":"找出文案的基本結構+儘量減少AI味","score":3},{"title":"AI 搜尋意圖內容地圖：分析旅客常問的目的地與上網問題，找出值得經營的攻略主題。","score":3},{"title":"跟蝦皮一樣，導入分潤連結","score":2},{"title":"詳盡簡單的教學","score":2},{"title":"AI 廣告疲勞偵測：分析素材成效衰退，提醒更新文案、圖片或受眾組合。","score":2},{"title":"讓大家發展下線，比賽總消耗流量","score":1},{"title":"1.心理測驗2.風格化美圖3.匯入行程表4.ESIM特權5社群分享.","score":0}]}]};
+    const state = {
+      ideas: [],
+      groups: [],
+      activeGroup: 0,
+      totalVoters: 0
+    };
+
+    const els = {
+      sourceMeta: document.querySelector('#sourceMeta'),
+      threshold: document.querySelector('#threshold'),
+      thresholdValue: document.querySelector('#thresholdValue'),
+      search: document.querySelector('#search'),
+      tabs: document.querySelector('#tabs'),
+      topics: document.querySelector('#topics'),
+      visibleCount: document.querySelector('#visibleCount'),
+      voterCount: document.querySelector('#voterCount')
+    };
+
+    function renderTabs(filteredGroups) {
+      els.tabs.innerHTML = '';
+      filteredGroups.forEach((group) => {
+        const button = document.createElement('button');
+        button.className = 'tab';
+        button.type = 'button';
+        button.setAttribute('aria-selected', String(group.index === state.activeGroup));
+        button.innerHTML = `<strong>${escapeHtml(group.title)}</strong><span>${group.visibleIdeas.length} / ${group.ideas.length} 個點子</span>`;
+        button.addEventListener('click', () => {
+          state.activeGroup = group.index;
+          render();
+        });
+        els.tabs.append(button);
+      });
+    }
+
+    function renderTopics(filteredGroups) {
+      els.topics.innerHTML = '';
+
+      filteredGroups.forEach((group) => {
+        const section = document.createElement('section');
+        section.className = `topic${group.index === state.activeGroup ? ' active' : ''}`;
+
+        const cards = group.visibleIdeas.map((idea) => {
+          const percent = state.totalVoters ? Math.round((idea.score / state.totalVoters) * 100) : 0;
+          return `
+            <article class="idea">
+              <p class="idea-title">${escapeHtml(idea.title)}</p>
+              <div class="vote-row">
+                <div class="vote-number">${idea.score}</div>
+                <div class="bar" aria-hidden="true"><div class="bar-fill" style="width: ${percent}%"></div></div>
+                <div class="vote-label">${percent}%</div>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        section.innerHTML = `
+          <div class="topic-head">
+            <h2>${escapeHtml(group.title)}</h2>
+            <div class="topic-count">${group.visibleIdeas.length} / ${group.ideas.length} 個點子</div>
+          </div>
+          ${cards ? `<div class="idea-grid">${cards}</div>` : '<div class="empty">此題目前沒有符合條件的點子。</div>'}
+        `;
+        els.topics.append(section);
+      });
+    }
+
+    function render() {
+      const minScore = Number(els.threshold.value);
+      const keyword = els.search.value.trim().toLowerCase();
+
+      const filteredGroups = state.groups.map((group) => ({
+        ...group,
+        visibleIdeas: group.ideas.filter((idea) => {
+          const haystack = `${idea.title} ${group.title}`.toLowerCase();
+          return idea.score >= minScore && haystack.includes(keyword);
+        })
+      }));
+
+      if (!filteredGroups.some((group) => group.index === state.activeGroup)) {
+        state.activeGroup = filteredGroups[0]?.index || 0;
+      }
+
+      const visibleTotal = filteredGroups.reduce((total, group) => total + group.visibleIdeas.length, 0);
+      els.thresholdValue.textContent = String(minScore);
+      els.visibleCount.textContent = String(visibleTotal);
+      els.voterCount.textContent = String(state.totalVoters);
+
+      renderTabs(filteredGroups);
+      renderTopics(filteredGroups);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+
+    function init() {
+      state.groups = SNAPSHOT.groups;
+      state.ideas = state.groups.flatMap(group => group.ideas);
+      state.totalVoters = SNAPSHOT.totalVoters;
+      els.threshold.max = String(state.totalVoters);
+      els.threshold.value = String(Math.min(2, state.totalVoters));
+      els.sourceMeta.textContent = '評選結果快照：' + state.totalVoters + ' 份評選、' + state.ideas.length + ' 個靈感';
+      els.threshold.addEventListener('input', render);
+      els.search.addEventListener('input', render);
+      render();
+    }
+    init();
+</script>
+</body>
+</html>
